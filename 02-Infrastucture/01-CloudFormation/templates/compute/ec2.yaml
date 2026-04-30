@@ -52,11 +52,3 @@ Resources:
           Value: !Ref Env
         - Key: Owner
           Value: !Ref AWS::AccountId 
-      
-
-Outputs:
-  BackendPrivateIP:
-    Description: Backend EC2 private IP
-    Value: !GetAtt ccBackendServer.PublicIP
-    Export:
-      Name: !Sub ${AWS::StackName}-FrontEndPublicIP

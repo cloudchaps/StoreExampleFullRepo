@@ -1,0 +1,62 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EmartStore EC2 instances stack - Webservers
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  AMIID:
+    Type: AWS::EC2::Image::Id
+    Default: ami-0ec10929233384c7f
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: cloudchaps_resorts_keypair
+
+  Env:
+    Description: Please enter the environment name
+    Type: String
+    Default: Development
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+
+Resources:
+  ccBackendServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AMIID
+      SubnetId:
+        Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PublicSubnet-1-ID"
+      SecurityGroupIds:
+        - Fn::ImportValue: !Sub "${Env}-WEB-SG-ID"
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Sub "${Env}-FrontEndServer"
+        - Key: Project
+          Value: CloudChaps
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId 
+      
+
+Outputs:
+  BackendPrivateIP:
+    Description: Backend EC2 private IP
+    Value: !GetAtt ccBackendServer.PublicIP
+    Export:
+      Name: !Sub ${AWS::StackName}-FrontEndPublicIP

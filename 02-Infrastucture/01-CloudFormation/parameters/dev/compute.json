@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "Env",
+    "ParameterValue": "DEV"
+  },
+  {
+    "ParameterKey": "AMIID",
+    "ParameterValue": "ami-0ec10929233384c7f"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "cloudchaps_resorts_keypair"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.micro"
+  }
+]

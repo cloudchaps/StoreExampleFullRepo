@@ -1,0 +1,58 @@
+---
+name: Build AWS infrastucture via cloud Formation
+on:
+  push:
+    branches: [ development ]
+  
+    paths:
+      - '02-Infrastucture/**'
+
+jobs:
+
+  validation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get latest commit from repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+   
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Validate VPC Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/vpc.yaml
+
+    - name: Validate InternetGateway Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/internet-gateway.yaml
+
+    - name: Validate RouteTables Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/route-tables.yaml
+
+    - name: Validate Subnets Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/subnets.yaml
+    
+    - name: Validate Security Groups Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/security-groups.yaml
+    
+    - name: Validate NACLs Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/nacls.yaml
+    
+    - name: Validate ApplicationLoadBalancer Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/alb.yaml
+    
+    - name: Validate Database Subnet Group Cloudformation template files
+      run: |
+        aws cloudformation validate-template --template-body file://../../02-Infrastucture/01-CloudFormation/templates/networking/database-subnet-group.yaml

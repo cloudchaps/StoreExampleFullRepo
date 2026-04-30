@@ -11,6 +11,22 @@ if [ -z "$PROFILE_NAME" ] || [ -z "$ACCOUNT_ID" ] || [ -z "$ROLE_NAME" ]; then
   exit 1
 fi
 
+echo "💻 -> 🔻 Deleting VPC emartstore-dev-db-subnet-group-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
+aws cloudformation delete-stack \
+    --stack-name emartstore-dev-db-subnet-group-stack \
+    --profile ${PROFILE_NAME} \
+    --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME}
+
+sleep 300
+
+echo "💻 -> 🔻 Deleting VPC emartstore-dev-alb-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
+aws cloudformation delete-stack \
+    --stack-name emartstore-dev-alb-stack \
+    --profile ${PROFILE_NAME} \
+    --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME}
+
+sleep 300
+
 echo "💻 -> 🔻 Deleting VPC emartstore-dev-nacls-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
 aws cloudformation delete-stack \
     --stack-name emartstore-dev-nacls-stack \
@@ -38,6 +54,14 @@ sleep 300
 echo "💻 -> 🔻 Deleting VPC emartstore-dev-subnets-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
 aws cloudformation delete-stack \
     --stack-name emartstore-dev-subnets-stack  \
+    --profile ${PROFILE_NAME} \
+    --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME}
+
+sleep 300
+
+echo "💻 -> 🔻 Deleting VPC emartstore-dev-route-tables-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
+aws cloudformation delete-stack \
+    --stack-name emartstore-dev-route-tables-stack \
     --profile ${PROFILE_NAME} \
     --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME}
 

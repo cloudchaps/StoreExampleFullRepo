@@ -1,0 +1,59 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EmartStore Virtual Private Network configurations.
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  VPCName:
+    Description: VPC Name
+    Type: String
+
+  VPCCidr:
+    Description: VPC CIDR block
+    Type: String
+    Default: 10.0.0.0/16
+
+Resources:
+  # VPC
+  ESVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: !Ref VPCName
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+Outputs:
+  VPCId:
+    Description: VPC ID
+    Value: !Ref ESVPC
+    Export:
+      Name: !Sub "${Env}-VPC-ID"
+
+  VPCCidrBlock:
+    Description: VPC CIDR Block
+    Value: !Ref VPCCidr
+    Export:
+      Name: !Sub "${Env}-VPC-CIDR"
+
+  VPCName:
+    Description: VPC Name
+    Value: !Ref VPCName
+    Export:
+      Name: !Sub "${Env}-VPC-NAME"

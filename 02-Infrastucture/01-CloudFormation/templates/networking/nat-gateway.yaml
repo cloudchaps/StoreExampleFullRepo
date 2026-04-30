@@ -1,0 +1,81 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps Resorts Nat gateway.
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  VPCName:
+    Description: VPC Name
+    Type: String
+
+Resources:
+  # Allocate Elastic IP
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-NatGateway-EIP"
+        - Key: Project
+          Value: CloudChaps
+        - Key: Environment
+          Value: Development
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+  
+  # Create NAT Gateway
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: 
+        Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PublicSubnet-1-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-NatGateway"
+        - Key: Project
+          Value: CloudChaps
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId 
+  
+  # Create Private Routes
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    DependsOn: NatGateway
+    Properties:
+      RouteTableId: 
+        Fn::ImportValue: !Sub "${Env}-PrivateRT-ID"
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  # Associate Private Route Tables with Private Subnets
+  PrivateSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: 
+        Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PrivateSubnet-1-ID"
+      RouteTableId: 
+        Fn::ImportValue: !Sub "${Env}-PrivateRT-ID"
+
+Outputs:
+  NatGatewayID:
+    Description: NatGateway Id
+    Value: !Ref NatGateway
+    Export:
+      Name: !Sub "${Env}-NatGateway-ID"
+
+  NatGatewayEIP:
+    Description: NatGateway EIP
+    Value: !Ref NatGatewayEIP
+    Export:
+      Name: !Sub "${Env}-NatGateway-EIP"

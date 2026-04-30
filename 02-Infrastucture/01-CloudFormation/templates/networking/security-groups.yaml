@@ -1,0 +1,116 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps Resorts Security groups.
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  VPCName:
+    Description: VPC Name
+    Type: String
+
+Resources:
+
+  # Security Group for Web Servers (HTTP, HTTPS, SSH)
+  ESWebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Ports 8080, 22, 443
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-API-SG"
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+  # Security Group for DB (Port 3306)
+  ESDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Ports 3306 for RDS only
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref ESWebServerSecurityGroup
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-MYSQL-SG"
+        - Key: Project
+          Value: CloudChaps_Hotels
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId 
+
+  # Security Group for non relational DB (Port 5000)
+  ESMongoSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Ports 5000 for mongodb only
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5000
+          ToPort: 5000
+          SourceSecurityGroupId: !Ref ESWebServerSecurityGroup
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-MONGO-SG"
+        - Key: Project
+          Value: CloudChaps_Hotels
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId 
+
+Outputs:
+
+  WebServerSG:
+    Description: Web Server Security Group
+    Value: !Ref ESWebServerSecurityGroup
+    Export:
+      Name: !Sub "${Env}-WEB-SG-ID"
+
+  DBSG:
+    Description: Database Security Group
+    Value: !Ref ESDBSecurityGroup
+    Export:
+      Name: !Sub "${Env}-DB-SG-ID"
+  
+  MongoSG:
+    Description: Database Security Group
+    Value: !Ref ESMongoSecurityGroup
+    Export:
+      Name: !Sub "${Env}-MONGO-SG-ID"

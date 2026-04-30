@@ -1,0 +1,163 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps Resorts Subnets configurations.
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  VPCName:
+    Description: VPC Name
+    Type: String
+
+  PublicSubnetCidr1:
+    Description: Please enter the CIDR block for the public subnet
+    Type: String
+    Default: 10.0.0.0/25
+  
+  PublicSubnetCidr2:
+    Description: Please enter the CIDR block for the public subnet
+    Type: String
+    Default: 10.0.1.128/25
+
+  PrivateSubnetCidr1:
+    Description: Please enter the CIDR block for the public subnet
+    Type: String
+    Default: 10.0.1.0/25
+  
+  PrivateSubnetCidr2:
+    Description: Please enter the CIDR block for the public subnet
+    Type: String
+    Default: 10.0.1.128/25
+
+Resources:
+  # Create Public Subnets
+  ESPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      CidrBlock: !Ref PublicSubnetCidr1
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-PublicSubnet-1"
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+  
+  ESPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      CidrBlock: !Ref PublicSubnetCidr2
+      AvailabilityZone: !Select [1, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-PublicSubnet-2"
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+  
+  # Create Public Route and associate it to the Public Subnet
+  ESPublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: 
+        Fn::ImportValue: !Sub "${Env}-IGW-ID"
+      RouteTableId: 
+        Fn::ImportValue: !Sub "${Env}-PublicRT-ID"
+
+  # Associate Public Route Table with the Public Subnet
+  ESPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Fn::ImportValue: !Sub "${Env}-PublicRT-ID"
+      SubnetId: !Ref ESPublicSubnet1
+  
+  ESPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Fn::ImportValue: !Sub "${Env}-PublicRT-ID"
+      SubnetId: !Ref ESPublicSubnet2
+  
+  # Create Private Subnets
+  ESPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      CidrBlock: !Ref PrivateSubnetCidr1
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-PrivateSubnet"
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+  ESPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      CidrBlock: !Ref PrivateSubnetCidr2
+      AvailabilityZone: !Select [1, !GetAZs '']
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-PrivateSubnet"
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+Outputs:
+
+  PublicSubnerId1:
+    Description: Public Subnet Id 1
+    Value: !Ref ESPublicSubnet1
+    Export:
+      Name: !Sub "${Env}-${VPCName}-PublicSubnet-1-ID"
+  
+  PublicSubnetId2:
+    Description: Public Subnet Id 2
+    Value: !Ref ESPublicSubnet2
+    Export:
+      Name: !Sub "${Env}-${VPCName}-PublicSubnet-2-ID"
+
+  PrivateSubnetId1:
+    Description: Private Subnet Id 1
+    Value: !Ref ESPrivateSubnet1
+    Export:
+      Name: !Sub "${Env}-${VPCName}-PrivateSubnet-1-ID"
+
+  PrivateSubnetId2:
+    Description: Private Subnet Id 2
+    Value: !Ref ESPrivateSubnet2
+    Export:
+      Name: !Sub "${Env}-${VPCName}-PrivateSubnet-2-ID"

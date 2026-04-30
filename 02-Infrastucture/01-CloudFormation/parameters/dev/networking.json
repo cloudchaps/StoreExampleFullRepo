@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "Env",
+    "ParameterValue": "DEV"
+  },
+  {
+    "ParameterKey": "VPCName",
+    "ParameterValue": "emartstore-dev-vpc"
+  },
+  {
+    "ParameterKey": "VPCCidr",
+    "ParameterValue": "10.0.0.0/23"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidr1",
+    "ParameterValue": "10.0.0.0/25"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidr2",
+    "ParameterValue": "10.0.0.128/25"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidr1",
+    "ParameterValue": "10.0.1.0/25"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidr2",
+    "ParameterValue": "10.0.1.128/25"
+  }
+]

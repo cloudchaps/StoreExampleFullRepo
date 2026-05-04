@@ -3,7 +3,6 @@ name: Build AWS infrastucture via cloud Formation
 on:
   push:
     branches: [ dev ]
-  
     paths:
       - '02-Infrastucture/01-CloudFormation/parameters/dev/*'
       - '02-Infrastucture/01-CloudFormation/parameters/dev/**'

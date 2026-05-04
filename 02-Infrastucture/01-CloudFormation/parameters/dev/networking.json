@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "Env",
-    "ParameterValue": "dev"
+    "ParameterValue": "DEV"
   },
   {
     "ParameterKey": "VPCName",

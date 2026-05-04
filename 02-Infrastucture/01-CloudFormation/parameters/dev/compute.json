@@ -14,5 +14,13 @@
   {
     "ParameterKey": "InstanceType",
     "ParameterValue": "t2.micro"
+  },
+  {
+    "ParameterKey": "TargetGroupName",
+    "ParameterValue": "CloudchapsStoresTargetGroup"
+  },
+  {
+    "ParameterKey": "LoadBalancerName",
+    "ParameterValue": "CloudchapsStoresALB"
   }
 ]

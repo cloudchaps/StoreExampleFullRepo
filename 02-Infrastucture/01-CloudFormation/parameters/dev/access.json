@@ -1,0 +1,22 @@
+[
+    {
+    "ParameterKey": "Env",
+    "ParameterValue": "DEV"
+    },
+    {
+        "ParameterKey": "ControlUserPolicy",
+        "ParameterValue": "CloudChapsStore_DEV_User_Policy"
+    },
+    {
+        "ParameterKey": "ControlRolePolicy",
+        "ParameterValue": "CloudChapsStore_DEV_Role_Policy"
+    },
+    {
+        "ParameterKey": "ControlUserName",
+        "ParameterValue": "CloudChapsStore_DEV_User"
+    },
+    {
+        "ParameterKey": "ControlUserRole",
+        "ParameterValue": "CloudChapsStore_DEV_Role"
+    }
+]

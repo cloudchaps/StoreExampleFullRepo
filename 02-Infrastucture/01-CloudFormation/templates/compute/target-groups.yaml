@@ -1,0 +1,65 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EmartStore Target Groups - Webservers
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+  
+  TargetGroupName:
+    Description: Please enter the target group name
+    Type: String
+    Default: CloudChapsTG
+  
+  WEBServerPrivateIP1:
+    Type: String
+    Description: Private IP of Web Server 1 (imported from EC2 stack)
+    Default: ""
+
+  WEBServerPrivateIP2:
+    Type: String
+    Description: Private IP of Web Server 2 (imported from EC2 stack)
+    Default: ""
+
+  WEBServerPrivateIP3:
+    Type: String
+    Description: Private IP of Web Server 3 (imported from EC2 stack)
+    Default: ""
+
+Resources:
+
+  ESFrontEndTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Ref TargetGroupName
+      Protocol: HTTP
+      Port: 80
+      TargetType: ip
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Targets:
+        - Id:
+            Fn::ImportValue: !Sub "${Env}-WEBServerPrivateIP1"
+          Port: 80
+        - Id:
+            Fn::ImportValue: !Sub "${Env}-WEBServerPrivateIP2"
+          Port: 80
+        - Id:
+            Fn::ImportValue: !Sub "${Env}-WEBServerPrivateIP3"
+          Port: 80
+      HealthCheckPath: /
+      HealthCheckPort: "80"
+      Matcher:
+        HttpCode: 200
+
+Outputs:
+  TargetGroupArn:
+    Value: !Ref ESFrontEndTargetGroup
+    Export:
+      Name: !Sub "${Env}-TargetGroupArn"

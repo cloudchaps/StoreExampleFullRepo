@@ -31,7 +31,7 @@ Resources:
         - Key: Owner
           Value: !Ref AWS::AccountId
 
-  # Create Inbound rule for HTTP and HTTPS
+  # Create Inbound rule for HTTP,  HTTPS and SSH
   ESAllowInboundHTTP:
     Type: AWS::EC2::NetworkAclEntry
     Properties:
@@ -57,13 +57,78 @@ Resources:
       PortRange:
         From: 443
         To: 443
+  
+  ESAllowInboundSSH:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref ESPublicNetworkAcl
+      RuleNumber: 120
+      Protocol: 6
+      RuleAction: allow
+      Egress: false
+      CidrBlock: 0.0.0.0/0
+      PortRange:
+        From: 22
+        To: 22
+  
+  ESAllowInboundEphemeral:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref ESPublicNetworkAcl
+      RuleNumber: 130
+      Protocol: 6
+      RuleAction: allow
+      Egress: false
+      CidrBlock: 0.0.0.0/0
+      PortRange:
+        From: 1024
+        To: 65535
 
-  # Create Outbound rule for HTTP and HTTPS
-  ESAllowOutboundEphemeral:
+  # Create Outbound rules for HTTP, HTTPS and ephemeral return traffic
+  ESAllowOutboundHTTP:
     Type: AWS::EC2::NetworkAclEntry
     Properties:
       NetworkAclId: !Ref ESPublicNetworkAcl
       RuleNumber: 100
+      Protocol: 6
+      RuleAction: allow
+      Egress: true
+      CidrBlock: 0.0.0.0/0
+      PortRange:
+        From: 80
+        To: 80
+
+  ESAllowOutboundHTTPS:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref ESPublicNetworkAcl
+      RuleNumber: 110
+      Protocol: 6
+      RuleAction: allow
+      Egress: true
+      CidrBlock: 0.0.0.0/0
+      PortRange:
+        From: 443
+        To: 443
+  
+  ESAllowOutbounddSSH:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref ESPublicNetworkAcl
+      RuleNumber: 130
+      Protocol: 6
+      RuleAction: allow
+      Egress: true
+      CidrBlock: 0.0.0.0/0
+      PortRange:
+        From: 22
+        To: 22
+
+  ESAllowOutboundEphemeral:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId: !Ref ESPublicNetworkAcl
+      RuleNumber: 120
       Protocol: 6
       RuleAction: allow
       Egress: true

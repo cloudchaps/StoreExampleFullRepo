@@ -1,0 +1,62 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps Resorts route tables.
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  VPCName:
+    Description: VPC Name
+    Type: String
+
+Resources:
+  # Create Public Route Table
+  ESPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-PublicRT"
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+  # Create Private Route Tables
+  ESPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "${VPCName}-PrivateRouteTable"
+        - Key: Project
+          Value: CloudChaps
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+Outputs:
+  RouteTableID:
+    Description: Public Route Table ID
+    Value: !Ref ESPublicRouteTable
+    Export:
+      Name: !Sub "${Env}-PublicRT-ID"
+  
+  PrivateRouteTableID:
+    Description: Private Route Table ID
+    Value: !Ref ESPrivateRouteTable
+    Export:
+      Name: !Sub "${Env}-PrivateRT-ID"

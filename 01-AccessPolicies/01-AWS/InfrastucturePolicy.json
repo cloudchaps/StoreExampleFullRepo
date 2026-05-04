@@ -11,6 +11,22 @@
         },
         {
             "Action": [
+                "elasticloadbalancing:Describe*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "ELBListAccess"
+        },
+        {
+            "Action": [
+                "rds:Describe*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "RDSListAccess"
+        },
+        {
+            "Action": [
                 "ec2:Create*",
                 "ec2:Delete*",
                 "ec2:Modify*",
@@ -18,33 +34,100 @@
                 "ec2:Detach*",
                 "ec2:Associate*",
                 "ec2:Allocate*",
-                "ec2:Disassociate*"
+                "ec2:Authorize*",
+                "ec2:Replace*",
+                "ec2:Run*",
+                "ec2:Terminate*",
+                "ec2:Disassociate*",
+                "ec2:ReleaseAddress"
             ],
             "Resource": [
                 "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:instance/*",
                 "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:volume/*",
-                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:network-interface/*",
-                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:security-group/*",
                 "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:subnet/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:security-group/*",
                 "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:vpc/*",
-                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:key-pair/*",
-                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:route-table/*",
                 "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:internet-gateway/*",
-                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:elastic-ip/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:route-table/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:network-interface/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:key-pair/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:image/*",
+                "arn:aws:ec2:us-east-1::image/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:launch-template/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:placement-group/*",
                 "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:natgateway/*",
-                "arn:aws:ec2:us-east-1::image/*"
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:network-acl/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:dhcp-options/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:snapshot/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:volume/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:capacity-reservation/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:fleet/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:spot-fleet/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:traffic-mirror-filter/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:traffic-mirror-session/*",
+                "arn:aws:ec2:us-east-1:{ACCOUNT_ID}:elastic-ip/*"
             ],
             "Effect": "Allow",
-            "Sid": "EC2WriteAccess"
+            "Sid": "EC2WritteAccess"
         },
         {
-            "Effect": "Allow",
             "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:GenerateDataKey"
+                "elasticloadbalancing:Create*",
+                "elasticloadbalancing:Delete*",
+                "elasticloadbalancing:Modify*",
+                "elasticloadbalancing:Register*",
+                "elasticloadbalancing:Deregister*",
+                "elasticloadbalancing:Attach*",
+                "elasticloadbalancing:Detach*",
+                "elasticloadbalancing:Add*"
             ],
-            "Resource": "arn:aws:kms:us-east-1:{ACCOUNT_ID}:key/YOUR-KMS-KEY-ID"
+            "Resource": [
+                "arn:aws:elasticloadbalancing:us-east-1:{ACCOUNT_ID}:loadbalancer/*",
+                "arn:aws:elasticloadbalancing:us-east-1:{ACCOUNT_ID}:listener/*",
+                "arn:aws:elasticloadbalancing:us-east-1:{ACCOUNT_ID}:targetgroup/*",
+                "arn:aws:elasticloadbalancing:us-east-1:{ACCOUNT_ID}:listener-rule/*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ELBWritteAccess"
+        },
+        {
+            "Action": [
+                "rds:Create*",
+                "rds:Delete*",
+                "rds:Modify*",
+                "rds:Restore*",
+                "rds:Reboot*",
+                "rds:Failover*",
+                "rds:Promote*",
+                "rds:Restore*",
+                "rds:Add*"
+            ],
+            "Resource": [
+                "arn:aws:rds:us-east-1:{ACCOUNT_ID}:db:*",
+                "arn:aws:rds:us-east-1:{ACCOUNT_ID}:cluster:*",
+                "arn:aws:rds:us-east-1:{ACCOUNT_ID}:pg:*",
+                "arn:aws:rds:us-east-1:{ACCOUNT_ID}:subgrp:*"
+            ],
+            "Effect": "Allow",
+            "Sid": "RDSWritteAccess"
+        },
+        {
+            "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DeleteStack",
+                "cloudformation:DescribeStacks*",
+                "cloudformation:CreateChangeSet",
+                "cloudformation:ExecuteChangeSet"
+            ],
+            "Resource": [
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:stack/*",
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:changeSet/*",
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:stackset/*",
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:stackpolicy/*",
+                "arn:aws:cloudformation:us-east-1:aws:transform/LanguageExtensions"
+            ],
+            "Effect": "Allow",
+            "Sid": "CloudFormationWritteAccess"
         }
     ]
 }

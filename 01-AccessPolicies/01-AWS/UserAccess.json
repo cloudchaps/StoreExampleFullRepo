@@ -1,0 +1,58 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "EC2PassRole"
+        },
+        {
+            "Action": [
+                "elasticloadbalancing:Describe*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "ELBListAccess"
+        },
+        {
+            "Action": [
+                "cloudformation:Describe*",
+                "cloudformation:Get*",
+                "cloudformation:List*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "CloudFormationListAccess"
+        },
+        {
+            "Action": [
+                "iam:List*",
+                "iam:Get*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "IAMListAccess"
+        },
+        {
+            "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DeleteStack",
+                "cloudformation:DescribeStacks*",
+                "cloudformation:CreateChangeSet",
+                "cloudformation:ExecuteChangeSet"
+            ],
+            "Resource": [
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:stack/*",
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:changeSet/*",
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:stackset/*",
+                "arn:aws:cloudformation:us-east-1:{ACCOUNT_ID}:stackpolicy/*",
+                "arn:aws:cloudformation:us-east-1:aws:transform/LanguageExtensions"
+            ],
+            "Effect": "Allow",
+            "Sid": "CloudFormationWritteAccess"
+        }
+    ]
+}

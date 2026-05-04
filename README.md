@@ -1,0 +1,1 @@
+[![Build AWS infrastucture via cloud Formation](https://github.com/cloudchaps/StoreExampleFullRepo/actions/workflows/DEV_INFRA_Integration.yaml/badge.svg)](https://github.com/cloudchaps/StoreExampleFullRepo/actions/workflows/DEV_INFRA_Integration.yaml)

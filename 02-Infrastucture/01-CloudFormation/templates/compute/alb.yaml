@@ -1,0 +1,49 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EmartStore Target Groups - Webservers
+
+Parameters:
+  Env:
+    Description: Environment name
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  LoadBalancerName:
+    Description: Please enter the Load Balancer name
+    Type: String
+    Default: CloudChapsALB
+
+Resources:
+
+  ESLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Ref LoadBalancerName
+      Type: application
+      Scheme: internet-facing  # or internal if truly private
+      Subnets: 
+        - Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PublicSubnet-1-ID"
+        - Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PublicSubnet-2-ID"
+      SecurityGroups: 
+        - Fn::ImportValue: !Sub "${Env}-WEB-SG-ID"
+
+  ESListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ESLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: 
+            Fn::ImportValue: !Sub "${Env}-TargetGroupArn"
+
+Outputs:
+  ALBDNSName:
+    Value: !GetAtt ESLoadBalancer.DNSName
+    Export:
+      Name: !Sub "${Env}-ALB-DNS-NAME"

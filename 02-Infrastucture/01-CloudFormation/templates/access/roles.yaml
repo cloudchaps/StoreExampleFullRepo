@@ -1,0 +1,53 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps control users
+
+Parameters:
+
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  ControlUserRole:
+    Type: String
+    Description: The name of the control user policy
+    Default: control
+
+Resources:
+
+  ControlRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref ControlUserRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - Fn::ImportValue: !Sub "${Env}-ControlRolePolicyArn"
+      Tags:
+        - Key: Name
+          Value: !Ref ControlUserRole
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+Outputs:
+
+  ControlRole:
+    Description: Control user name
+    Value: !Ref ControlRole
+    Export:
+      Name: !Sub "${Env}-ControlUserRole"

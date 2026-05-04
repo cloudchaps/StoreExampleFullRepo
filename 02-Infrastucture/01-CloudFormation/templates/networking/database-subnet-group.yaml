@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: DEV database subnet group
+
+Parameters:
+  Env:
+    Type: String
+    Default: DEV
+
+Resources:
+  DatabaseSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub "emartstore-${Env}-db-subnet-group"
+      DBSubnetGroupDescription: Private subnet group for RDS databases
+      SubnetIds:
+        - Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PrivateSubnet-1-ID"
+        - Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PrivateSubnet-2-ID"
+      Tags:
+        - Key: Name
+          Value: !Sub "emartstore-${Env}-db-subnet-group"
+
+Outputs:
+  DatabaseSubnetGroupName:
+    Description: RDS DB Subnet Group Name
+    Value: !Ref DatabaseSubnetGroup
+    Export:
+      Name: !Sub "${Env}-DB-SUBNET-GROUP"

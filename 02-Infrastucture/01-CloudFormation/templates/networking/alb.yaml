@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: DEV ALB routing
+
+Parameters:
+  Env:
+    Type: String
+    Default: DEV
+
+Resources:
+  WebTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: emart-dev-web-tg
+      VpcId:
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Protocol: HTTP
+      Port: 80
+      TargetType: instance
+      HealthCheckPath: /
+
+  ApiTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: emart-dev-api-tg
+      VpcId:
+        Fn::ImportValue: !Sub "${Env}-VPC-ID"
+      Protocol: HTTP
+      Port: 8080
+      TargetType: instance
+      HealthCheckPath: /health
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: emart-dev-alb
+      Scheme: internet-facing
+      Type: application
+      SecurityGroups:
+        - Fn::ImportValue: !Sub "${Env}-WEB-SG-ID"
+      Subnets:
+        - Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PublicSubnet-1-ID"
+        - Fn::ImportValue: !Sub "${Env}-emartstore-dev-vpc-PublicSubnet-2-ID"
+
+  HTTPListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WebTargetGroup
+
+  ApiListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref HTTPListener
+      Priority: 10
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - /api/*
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref ApiTargetGroup

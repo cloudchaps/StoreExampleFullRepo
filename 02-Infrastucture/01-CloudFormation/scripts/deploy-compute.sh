@@ -11,10 +11,32 @@ if [ -z "$PROFILE_NAME" ] || [ -z "$ACCOUNT_ID" ] || [ -z "$ROLE_NAME" ]; then
   exit 1
 fi
 
-echo "💻 -> 🆙 Deploying Compute emartstore-dev-frontend-servers-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
+echo "💻 -> 🆙 Deploying Compute emartstore-dev-compute-frontend-servers-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
 aws cloudformation deploy \
   --template-file ../templates/compute/ec2.yaml \
-  --stack-name emartstore-dev-frontend-servers-stack \
+  --stack-name emartstore-dev-compute-frontend-servers-stack \
+  --parameter-overrides file://../parameters/dev/compute.json \
+  --profile ${PROFILE_NAME} \
+  --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME} \
+  --tags \
+    Project=CloudChaps_Resorts \
+    Environment=DEV
+
+echo "💻 -> 🆙 Deploying Compute emartstore-dev-compute-target-groups-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
+aws cloudformation deploy \
+  --template-file ../templates/compute/target-groups.yaml \
+  --stack-name emartstore-dev-compute-target-groups-stack \
+  --parameter-overrides file://../parameters/dev/compute.json \
+  --profile ${PROFILE_NAME} \
+  --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME} \
+  --tags \
+    Project=CloudChaps_Resorts \
+    Environment=DEV
+
+echo "💻 -> 🆙 Deploying Compute emartstore-dev-compute-alb-stack with ${PROFILE_NAME} profile assuming ${ROLE_NAME} role"
+aws cloudformation deploy \
+  --template-file ../templates/compute/alb.yaml \
+  --stack-name emartstore-dev-compute-alb-stack \
   --parameter-overrides file://../parameters/dev/compute.json \
   --profile ${PROFILE_NAME} \
   --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${ROLE_NAME} \

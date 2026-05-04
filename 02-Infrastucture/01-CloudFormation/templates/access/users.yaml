@@ -1,0 +1,44 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps control users
+
+Parameters:
+
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  ControlUserName:
+    Type: String
+    Description: The name of the control user policy
+    Default: control
+
+Resources:
+
+  ControlUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref ControlUserName
+      ManagedPolicyArns:
+        - Fn::ImportValue: !Sub "${Env}-ControlUserPolicyArn"
+      Tags:
+        - Key: Name
+          Value: !Ref ControlUserName
+        - Key: Project
+          Value: CloudChaps_Resorts
+        - Key: Environment
+          Value: !Ref Env
+        - Key: Owner
+          Value: !Ref AWS::AccountId
+
+Outputs:
+
+  ControlUser:
+    Description: Control user name
+    Value: !Ref ControlUser
+    Export:
+      Name: !Sub "${Env}-ControlUserName"

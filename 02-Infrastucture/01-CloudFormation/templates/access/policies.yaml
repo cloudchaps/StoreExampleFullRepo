@@ -1,0 +1,198 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudChaps control policies
+
+Parameters:
+
+  Env:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - DEV
+      - STAGE
+      - PROD
+
+  ControlUserPolicy:
+    Type: String
+    Description: The name of the control user policy
+    Default: control
+
+  ControlRolePolicy:
+    Type: String
+    Description: The name of the control role policy
+    Default: ControlRole
+
+
+Resources:
+
+  # Control User Policy
+  ESControlUserPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: ControlUserPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: EC2PassRole
+            Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: '*'
+          - Sid: ELBListAccess
+            Effect: Allow
+            Action:
+              - elasticloadbalancing:Describe*
+            Resource: '*'
+          - Sid: CloudFormationListAccess
+            Effect: Allow
+            Action:
+              - cloudformation:Describe*
+              - cloudformation:Get*
+              - cloudformation:List*
+            Resource: '*'
+          - Sid: IAMListAccess
+            Effect: Allow
+            Action:
+              - iam:List*
+              - iam:Get*
+            Resource: '*'
+          - Sid: CloudFormationWritteAccess
+            Effect: Allow
+            Action:
+              - cloudformation:CreateStack
+              - cloudformation:DeleteStack
+              - cloudformation:DescribeStacks*
+              - cloudformation:CreateChangeSet
+              - cloudformation:ExecuteChangeSet
+            Resource:
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:changeSet/*
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stackset/*
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stackpolicy/*
+              - !Sub arn:aws:cloudformation:us-east-1:aws:transform/LanguageExtensions
+
+  # Control Role Policy
+  ESControlRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: ControlRolePolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: EC2ListAccess
+            Effect: Allow
+            Action:
+              - ec2:Describe*
+            Resource: '*'
+          - Sid: ELBListAccess
+            Effect: Allow
+            Action:
+              - elasticloadbalancing:Describe*
+            Resource: '*'
+          - Sid: RDSListAccess
+            Effect: Allow
+            Action:
+              - rds:Describe*
+            Resource: '*'
+          - Sid: EC2WritteAccess
+            Effect: Allow
+            Action:
+              - ec2:Create*
+              - ec2:Delete*
+              - ec2:Modify*
+              - ec2:Attach*
+              - ec2:Detach*
+              - ec2:Associate*
+              - ec2:Allocate*
+              - ec2:Authorize*
+              - ec2:Replace*
+              - ec2:Run*
+              - ec2:Terminate*
+              - ec2:Disassociate*
+              - ec2:ReleaseAddress
+            Resource: 
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:volume/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:subnet/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:security-group/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:internet-gateway/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:route-table/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:network-interface/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:key-pair/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:image/*
+              - !Sub arn:aws:ec2:${AWS::Region}::image/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:launch-template/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:placement-group/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:natgateway/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:network-acl/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:dhcp-options/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:snapshot/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:volume/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:capacity-reservation/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:fleet/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:spot-fleet/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:traffic-mirror-filter/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:traffic-mirror-session/*
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:elastic-ip/*
+          - Sid: ELBWritteAccess
+            Effect: Allow
+            Action:
+              - elasticloadbalancing:Create*
+              - elasticloadbalancing:Delete*
+              - elasticloadbalancing:Modify*
+              - elasticloadbalancing:Register*
+              - elasticloadbalancing:Deregister*
+              - elasticloadbalancing:Attach*
+              - elasticloadbalancing:Detach*
+              - elasticloadbalancing:Add*
+            Resource: 
+              - !Sub arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:loadbalancer/*
+              - !Sub arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:listener/*
+              - !Sub arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/*
+              - !Sub arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:listener-rule/*
+          - Sid: RDSWritteAccess
+            Effect: Allow
+            Action:
+              - rds:Create*
+              - rds:Delete*
+              - rds:Modify*
+              - rds:Restore*
+              - rds:Reboot*
+              - rds:Failover*
+              - rds:Promote*
+              - rds:Restore*
+              - rds:Add*
+            Resource: 
+              - !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:*
+              - !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:*
+              - !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:pg:*
+              - !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:subgrp:*
+          - Sid: CloudFormationWritteAccess
+            Effect: Allow
+            Action:
+              - cloudformation:CreateStack
+              - cloudformation:DeleteStack
+              - cloudformation:DescribeStacks*
+              - cloudformation:CreateChangeSet
+              - cloudformation:ExecuteChangeSet
+            Resource:
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:changeSet/*
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stackset/*
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stackpolicy/*
+              - !Sub arn:aws:cloudformation:us-east-1:aws:transform/LanguageExtensions
+
+Outputs:
+
+  ControlUserPolicyArn:
+    Description: The ARN of the control user policy
+    Value: !Ref ESControlUserPolicy
+    Export:
+      Name: !Sub "${Env}-ControlUserPolicyArn"
+
+  ControlRolePolicyArn:
+    Description: The ARN of the control role policy
+    Value: !Ref ESControlRolePolicy
+    Export:
+      Name: !Sub "${Env}-ControlRolePolicyArn"

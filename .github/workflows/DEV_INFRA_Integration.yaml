@@ -2,7 +2,7 @@
 name: Build AWS infrastucture via cloud Formation
 on:
   push:
-    branches: [ development ]
+    branches: [ dev ]
   
     paths:
       - '02-Infrastucture/**'

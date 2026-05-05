@@ -1,8 +1,4 @@
-# 📦 CloudChaps Resorts – Modular CloudFormation Infrastructure
-
-## 📖 Overview
-
-This project defines a **modular, multi-environment AWS infrastructure** using **CloudFormation**.
+# 📦 CloudChaps Stores – Modular Infrastructure
 
 The goal is to **strengthen networking fundamentals** while following **production-grade patterns**, including:
 
@@ -37,6 +33,26 @@ The goal is to **strengthen networking fundamentals** while following **producti
     │   └── deploy-*.sh
     │
     └── README.md 
+02-multi-cloud-infra/
+└── environments/
+    ├── templates/
+    │   ├── dev/
+    │   ├── prod/
+    │   └── stage/
+└── live/
+    ├── live/
+    │   ├── azure/
+    │   ├── gcp/
+└── modules/
+    ├── azure/
+    │   ├── compute/
+    │   ├── databases/
+    │   ├── networking/
+    ├── gcp/
+    │   ├── compute/
+    │   ├── databases/
+    │   ├── networking/
+└── README.md/
 ```
 
 ## 🌍 Environments
@@ -118,29 +134,6 @@ Other stacks import them:
 Fn::ImportValue: !Sub "${Env}-VPC-ID"
 ```
 
-## 🚀 Deployment Steps
-### 1. Prerequisites
-- AWS CLI configured
-- IAM Role with:
-    - CloudFormation access
-    - EC2 permissions
-    - iam:PassRole (if needed)
-### 2. Deploy Networking
-```BASH
-./scripts/deploy-vpc-dev.sh <profile> <account-id> <role-name>
-```
-Then Deploy:
-```BASH
-subnets → route tables → NAT → security groups
-```
-### 3. Deploy Database Layer
-```BASH
-db-subnet-group → RDS
-```
-### 4. Deploy Compute Layer
-```BASH
-ALB → Target Groups → EC2
-```
 ## 🧠 Key Networking Concepts Practiced
 - CIDR planning and subnetting
 - Public vs Private isolation

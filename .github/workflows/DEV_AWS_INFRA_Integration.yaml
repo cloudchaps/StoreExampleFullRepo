@@ -8,6 +8,7 @@ on:
       - '02-Infrastucture/01-CloudFormation/parameters/dev/**'
       - '02-Infrastucture/01-CloudFormation/templates/networking/*'
       - '02-Infrastucture/01-CloudFormation/templates/networking/**'
+      - ".github/workflows/DEV_AWS_INFRA_Integration.yml"
 
 jobs:
 
@@ -62,3 +63,31 @@ jobs:
     - name: Validate Database Subnet Group Cloudformation template files
       run: |
         aws cloudformation validate-template --template-body file://./02-Infrastucture/01-CloudFormation/templates/networking/nat-gateway.yaml
+
+    deployment:
+    needs: validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get latest commit from repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+   
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy VPC
+      run: |
+        aws cloudformation deploy \
+          --template-file ../templates/networking/vpc.yaml \
+          --stack-name emartstore-dev-networking-vpc-stack \
+          --parameter-overrides file://../parameters/dev/networking.json \
+          --role-arn arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{ secrets.ROLE_NAME }} \
+          --tags \
+            Project=CloudChaps_Resorts \
+            Environment=DEV
